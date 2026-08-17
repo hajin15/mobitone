@@ -7,7 +7,7 @@
 3. 아래 명령어를 순서대로 입력하세요.
 
 ```bash
-npm install
+npm install 
 npm start
 ```
 
