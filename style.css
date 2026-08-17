@@ -1,0 +1,420 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* ==================== 테마 변수 ==================== */
+/* 라이트 모드 (기본값) */
+:root {
+  --bg-base: #eef1fb;
+
+  --blob-1: radial-gradient(circle, #bcc9ff 0%, #dde5ff 45%, transparent 75%);
+  --blob-2: radial-gradient(circle, #b6f2e6 0%, #d9f8f1 45%, transparent 75%);
+  --blob-3: radial-gradient(circle, #ddc9fb 0%, #ede1ff 45%, transparent 75%);
+  --blob-opacity: 0.85;
+  --blob-blend: normal;
+  --blob-blur: 100px;
+  --blob-scare: 1;
+
+  --text-primary: #4552d6;
+  --text-secondary: #4a5170;
+  --text-tertiary: #8b93ad;
+
+  --clock-grad-start: #7b86f0;
+  --clock-grad-end: #6a78e0;
+
+  --pill-bg: rgba(255, 255, 255, 0.75);
+  --pill-border: rgba(0, 0, 0, 0.06);
+
+  --icon-bg: rgba(255, 255, 255, 0.85);
+  --icon-border: rgba(0, 0, 0, 0.06);
+  --icon-hover: rgba(0, 0, 0, 0.05);
+
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-border: rgba(0, 0, 0, 0.06);
+  --card-shadow: 0 12px 30px rgba(90, 100, 170, 0.12);
+
+  --album-bg: linear-gradient(135deg, #a9c6ff, #d6b9ff);
+
+  --track-title-color: #333a52;
+  --track-artist-color: #7d84a0;
+
+  --progress-track: rgba(0, 0, 0, 0.08);
+  --progress-fill: #6f7ce8;
+
+  --control-color: #6f7ce8;
+  --control-hover: rgba(111, 124, 232, 0.1);
+  --playbtn-grad-start: #8b7ff0;
+  --playbtn-grad-end: #6f9af0;
+
+  --bottom-bg: rgba(255, 255, 255, 0.55);
+  --bottom-border: rgba(0, 0, 0, 0.06);
+}
+
+/* 다크 모드 (기존 어두운 버전보다 조금 더 어둡게) */
+:root[data-theme="dark"] {
+  --bg-base: #08070f;
+
+  --blob-1: radial-gradient(circle, #8a68f5 0%, #4a35a8 40%, transparent 72%);
+  --blob-2: radial-gradient(circle, #2fcaae 0%, #1a7d8f 40%, transparent 72%);
+  --blob-3: radial-gradient(circle, #c93ed6 0%, #59268f 40%, transparent 72%);
+  --blob-opacity: 0.42;
+  --blob-blend: screen;
+  --blob-blur: 150px;
+  --blob-scale: 1.35;
+
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.85);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+
+  --clock-grad-start: #b998ff;
+  --clock-grad-end: #7f90e8;
+
+  --pill-bg: rgba(255, 255, 255, 0.06);
+  --pill-border: rgba(255, 255, 255, 0.13);
+
+  --icon-bg: rgba(255, 255, 255, 0.06);
+  --icon-border: rgba(255, 255, 255, 0.13);
+  --icon-hover: rgba(255, 255, 255, 0.1);
+
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: none;
+
+  --album-bg: rgba(255, 255, 255, 0.8);
+
+  --track-title-color: #ffffff;
+  --track-artist-color: rgba(255, 255, 255, 0.55);
+
+  --progress-track: rgba(255, 255, 255, 0.18);
+  --progress-fill: rgba(255, 255, 255, 0.85);
+
+  --control-color: rgba(255, 255, 255, 0.85);
+  --control-hover: rgba(255, 255, 255, 0.1);
+  --playbtn-grad-start: #b962da;
+  --playbtn-grad-end: #7280c2;
+
+  --bottom-bg: rgba(255, 255, 255, 0.07);
+  --bottom-border: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== 기본 레이아웃 ==================== */
+html, body, #app {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  color: var(--text-primary);
+  background: var(--bg-base);
+  transition: background 0.3s ease;
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(var(--blob-blur));   /* blur(100px) → blur(var(--blob-blur)) */
+  transform: scale(var(--blob-scale));  /* 추가 */
+  z-index: 0;
+  opacity: var(--blob-opacity);
+  mix-blend-mode: var(--blob-blend);
+  transition: opacity 0.3s ease;
+}
+
+.blob-1 {
+  width: 650px;
+  height: 650px;
+  top: -180px;
+  left: -150px;
+  background: var(--blob-1);
+}
+
+.blob-2 {
+  width: 600px;
+  height: 600px;
+  bottom: -200px;
+  left: -120px;
+  background: var(--blob-2);
+}
+
+.blob-3 {
+  width: 550px;
+  height: 550px;
+  bottom: -150px;
+  right: -180px;
+  background: var(--blob-3);
+}
+
+/* --- 상단 바 --- */
+.top-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 36px 50px;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 800;
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.playlist-pill {
+  flex: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  padding: 12px 12px 12px 28px;
+  border-radius: 30px;
+  font-size: 17px;
+  max-width: 380px;
+  margin: 0 auto;
+  color: var(--text-secondary);
+}
+
+.plus-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--icon-bg);
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.icon-group {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--icon-border);
+  background: var(--icon-bg);
+  color: var(--text-secondary);
+  font-size: 19px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: background 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--icon-hover);
+}
+
+/* --- 가운데 시계 --- */
+.center {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-top: 110px;
+}
+
+.clock {
+  font-size: 200px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  line-height: 1;
+  background: linear-gradient(90deg, var(--clock-grad-start), var(--clock-grad-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.greeting {
+  font-size: 21px;
+  margin-top: 16px;
+  color: var(--text-secondary);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+}
+
+/* --- 음악 플레이어 카드 --- */
+.player-card {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 64%;
+  transform: translateX(-50%);
+  width: 700px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 26px 34px;
+  backdrop-filter: blur(18px);
+  box-shadow: var(--card-shadow);
+}
+
+.album-art {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  background: var(--album-bg);
+  flex-shrink: 0;
+}
+
+.track-info {
+  flex-shrink: 0;
+  max-width: 220px;      /* 추가: 제목이 아무리 길어도 이 너비를 넘지 않음 */
+  overflow: hidden;      /* 추가 */
+}
+
+.track-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--track-title-color);
+  white-space: nowrap;      /* 추가: 줄바꿈 없이 한 줄로 */
+  overflow: hidden;         /* 추가 */
+  text-overflow: ellipsis;  /* 추가: 넘치면 ... 으로 표시 */
+}
+
+.track-artist {
+  font-size: 15px;
+  color: var(--track-artist-color);
+  margin-top: 4px;
+  white-space: nowrap;      /* 추가 */
+  overflow: hidden;         /* 추가 */
+  text-overflow: ellipsis;  /* 추가 */
+}
+
+.player-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.progress-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-label {
+  font-size: 16px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--progress-track);
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 15%;
+  height: 100%;
+  background: var(--progress-fill);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.controls button {
+  background: none;
+  border: none;
+  color: var(--control-color);
+  font-size: 22px;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.15s ease;
+}
+
+.controls button:hover {
+  background: var(--control-hover);
+}
+
+.controls button:focus,
+.controls button:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+#playBtn {
+  background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  color: white;
+}
+
+#playBtn:hover {
+  filter: brightness(1.08);
+  background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
+}
+
+/* --- 하단 바 --- */
+.bottom-bar {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  width: 780px;
+  height: 48px;
+  border-radius: 24px;
+  background: var(--bottom-bg);
+  border: 1px solid var(--bottom-border);
+  backdrop-filter: blur(10px);
+
+  /* ==================== YouTube 테스트 플레이어 ==================== */
+
+/* ==================== YouTube 플레이어 ==================== */
+
+#youtube-player {
+  position: fixed !important;
+  right: 30px !important;
+  bottom: 30px !important;
+  left: auto !important;
+  top: auto !important;
+
+  width: 480px !important;
+  height: 270px !important;
+
+  z-index: 9999 !important;
+
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+
+  display: block;
+}
+}

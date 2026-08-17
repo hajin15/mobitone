@@ -1,0 +1,22 @@
+{
+  "name": "mobitone-wallpaper",
+  "version": "1.0.0",
+  "description": "시계, 인사말, 음악 플레이어가 있는 데스크탑 배경화면 앱",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron ."
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.11.0",
+    "electron": "^30.0.0",
+    "typescript": "^5.4.0"
+  },
+  "allowScripts": {
+    "electron@30.5.1": true
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
