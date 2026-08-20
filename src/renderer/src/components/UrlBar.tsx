@@ -88,7 +88,7 @@ const Input = styled.input`
   border: none;
   outline: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
 
   &::placeholder {

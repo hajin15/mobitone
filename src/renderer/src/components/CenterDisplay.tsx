@@ -24,8 +24,8 @@ const Center = styled.main`
 `;
 
 const Clock = styled.div`
-  font-size: 200px;
-  font-weight: 800;
+  font-size: var(--fs-display);
+  font-weight: var(--fw-black);
   letter-spacing: 2px;
   line-height: 1;
   background: linear-gradient(90deg, var(--clock-grad-start), var(--clock-grad-end));
@@ -34,13 +34,15 @@ const Clock = styled.div`
 `;
 
 const Greeting = styled.div`
-  font-size: 21px;
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-medium);
   margin-top: 16px;
   color: var(--text-secondary);
 `;
 
 const Subtitle = styled.div`
-  font-size: 16px;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-regular);
   color: var(--text-tertiary);
   margin-top: 6px;
 `;

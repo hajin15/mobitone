@@ -105,8 +105,8 @@ const TrackInfo = styled.div`
 `;
 
 const TrackTitle = styled.div`
-  font-size: 21px;
-  font-weight: 700;
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
   color: var(--track-title-color);
   white-space: nowrap;
   overflow: hidden;
@@ -114,7 +114,7 @@ const TrackTitle = styled.div`
 `;
 
 const TrackArtist = styled.div`
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--track-artist-color);
   margin-top: 4px;
   white-space: nowrap;
@@ -138,7 +138,7 @@ const ProgressRow = styled.div`
 `;
 
 const TimeLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-sm);
   color: var(--text-tertiary);
   flex-shrink: 0;
   /* 숫자 폭이 흔들려서 진행바가 덜컹거리지 않게 */

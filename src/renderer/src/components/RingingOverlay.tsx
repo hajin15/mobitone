@@ -86,8 +86,8 @@ const Bell = styled.div`
 `;
 
 const Label = styled.div`
-  font-size: 34px;
-  font-weight: 700;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
 `;
 
@@ -97,7 +97,7 @@ const StopButton = styled.button`
   border: none;
   background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
   font-family: inherit;
-  font-size: 18px;
+  font-size: var(--fs-lg);
   color: #ffffff;
   cursor: pointer;
 

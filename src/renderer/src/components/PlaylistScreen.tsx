@@ -168,7 +168,7 @@ const TextButton = styled.button`
   padding: 8px 12px;
   border-radius: 20px;
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -188,13 +188,13 @@ const Title = styled.h1`
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 30px;
-  font-weight: 700;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
 `;
 
 const NowPlaying = styled.div`
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-tertiary);
   max-width: 640px;
   overflow: hidden;
@@ -203,7 +203,7 @@ const NowPlaying = styled.div`
 
   strong {
     color: var(--text-secondary);
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
   }
 `;
 
@@ -220,7 +220,7 @@ const List = styled.div`
 const Empty = styled.div`
   text-align: center;
   padding: 30px;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-tertiary);
 `;
 
@@ -263,8 +263,8 @@ const RowText = styled.div`
 `;
 
 const RowTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
   color: var(--track-title-color);
   white-space: nowrap;
   overflow: hidden;
@@ -273,7 +273,7 @@ const RowTitle = styled.div`
 
 const RowArtist = styled.div`
   margin-top: 2px;
-  font-size: 13px;
+  font-size: var(--fs-xs);
   color: var(--track-artist-color);
   white-space: nowrap;
   overflow: hidden;
@@ -320,7 +320,7 @@ const UrlInput = styled.input`
   border: none;
   outline: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
 
   &::placeholder {
@@ -337,7 +337,7 @@ const PrimaryButton = styled.button`
   border: none;
   background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: #ffffff;
   cursor: pointer;
 

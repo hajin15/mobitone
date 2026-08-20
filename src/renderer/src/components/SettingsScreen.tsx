@@ -177,7 +177,7 @@ const TextButton = styled.button`
   padding: 8px 12px;
   border-radius: 20px;
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -192,8 +192,8 @@ const Title = styled.h1`
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 30px;
-  font-weight: 700;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
 `;
 
@@ -229,14 +229,14 @@ const ItemText = styled.div`
 `;
 
 const ItemName = styled.div`
-  font-size: 17px;
-  font-weight: 600;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
   color: var(--track-title-color);
 `;
 
 const ItemHint = styled.div`
   margin-top: 3px;
-  font-size: 14px;
+  font-size: var(--fs-xs);
   color: var(--text-tertiary);
 `;
 
@@ -252,7 +252,7 @@ const Chip = styled.button`
   border: 1px solid var(--card-border);
   background: var(--icon-bg);
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.12s ease;
@@ -265,7 +265,7 @@ const Chip = styled.button`
     background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
     border-color: transparent;
     color: #ffffff;
-    font-weight: 700;
+    font-weight: var(--fw-bold);
   }
 `;
 
@@ -282,7 +282,7 @@ const TextInput = styled.input`
   background: var(--icon-bg);
   outline: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
 
   &::placeholder {

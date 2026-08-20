@@ -146,7 +146,7 @@ const TextButton = styled.button`
   padding: 8px 12px;
   border-radius: 20px;
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -161,14 +161,14 @@ const Title = styled.h1`
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 32px;
-  font-weight: 700;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
 `;
 
 const Countdown = styled.div`
-  font-size: 92px;
-  font-weight: 800;
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-black);
   line-height: 1;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
@@ -202,14 +202,14 @@ const NumberInput = styled.input`
   backdrop-filter: blur(18px);
   outline: none;
   font-family: inherit;
-  font-size: 46px;
-  font-weight: 700;
+  font-size: var(--fs-numeric);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 `;
 
 const Unit = styled.span`
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-tertiary);
 `;
 
@@ -227,7 +227,7 @@ const PrimaryButton = styled.button`
   border: none;
   background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: #ffffff;
   cursor: pointer;
 

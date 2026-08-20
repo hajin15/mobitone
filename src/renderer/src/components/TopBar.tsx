@@ -75,8 +75,8 @@ const Bar = styled.header`
 `;
 
 const Logo = styled.div`
-  font-size: 26px;
-  font-weight: 800;
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-black);
   flex: 1;
   color: var(--text-primary);
 `;
@@ -91,7 +91,7 @@ const PlaylistPill = styled.div`
   border: 1px solid var(--pill-border);
   padding: 12px 12px 12px 28px;
   border-radius: 30px;
-  font-size: 17px;
+  font-size: var(--fs-lg);
   max-width: 380px;
   margin: 0 auto;
   color: var(--text-secondary);

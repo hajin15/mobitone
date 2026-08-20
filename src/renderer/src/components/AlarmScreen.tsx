@@ -194,7 +194,7 @@ const TextButton = styled.button`
   padding: 8px 12px;
   border-radius: 20px;
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -209,8 +209,8 @@ const Title = styled.h1`
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 30px;
-  font-weight: 700;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
 `;
 
@@ -227,7 +227,7 @@ const List = styled.div`
 const Empty = styled.div`
   text-align: center;
   padding: 20px;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-tertiary);
 `;
 
@@ -248,15 +248,15 @@ const Row = styled.div`
 `;
 
 const RowTime = styled.span`
-  font-size: 26px;
-  font-weight: 700;
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
   color: var(--track-title-color);
   font-variant-numeric: tabular-nums;
 `;
 
 const RowRepeat = styled.span`
   flex: 1;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-tertiary);
 `;
 
@@ -267,7 +267,7 @@ const SwitchButton = styled.button`
   border: 1px solid var(--card-border);
   background: none;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   color: var(--text-tertiary);
   cursor: pointer;
 
@@ -315,14 +315,14 @@ const Preview = styled.div`
 `;
 
 const PreviewTime = styled.span`
-  font-size: 40px;
-  font-weight: 800;
+  font-size: var(--fs-numeric);
+  font-weight: var(--fw-black);
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 `;
 
 const PreviewHint = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: var(--text-tertiary);
 `;
 
@@ -336,7 +336,7 @@ const FieldLabel = styled.span`
   width: 20px;
   padding-top: 8px;
   flex-shrink: 0;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-tertiary);
 `;
 
@@ -353,7 +353,7 @@ const Chip = styled.button`
   border: 1px solid var(--card-border);
   background: var(--icon-bg);
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
   cursor: pointer;
@@ -367,7 +367,7 @@ const Chip = styled.button`
     background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
     border-color: transparent;
     color: #ffffff;
-    font-weight: 700;
+    font-weight: var(--fw-bold);
   }
 `;
 
@@ -375,7 +375,7 @@ const RepeatLabel = styled.label`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   cursor: pointer;
 `;
@@ -394,7 +394,7 @@ const PrimaryButton = styled.button`
   border: none;
   background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-md);
   color: #ffffff;
   cursor: pointer;
 

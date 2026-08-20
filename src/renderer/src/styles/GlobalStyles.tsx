@@ -7,7 +7,41 @@ const globalCss = css`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    font-family: var(--font-sans);
+  }
+
+  /* ==================== 타이포그래피 ==================== */
+  /* 테마와 무관하게 고정입니다. 크기는 역할 이름으로만 부르고,
+     컴포넌트에 px 을 직접 적지 않습니다. */
+  :root {
+    --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+      'Apple SD Gothic Neo', system-ui, sans-serif;
+
+    /* 화면을 지배하는 숫자 */
+    --fs-display: 200px; /* 시계 */
+    --fs-hero: 92px; /* 타이머 카운트다운 */
+    --fs-numeric: 44px; /* 시·분·초 입력, 알람 미리보기 */
+
+    /* 제목 */
+    --fs-h1: 30px; /* 화면 제목 */
+    --fs-h2: 26px; /* 로고, 알람 시각 */
+    --fs-h3: 21px; /* 곡 제목, 인사말 */
+
+    /* 본문 */
+    --fs-lg: 17px; /* 설정 항목 이름 */
+    --fs-md: 16px; /* 기본 본문·버튼 */
+    --fs-sm: 15px; /* 보조 설명, 입력칸 */
+    --fs-xs: 13px; /* 캡션 */
+
+    /* 굵기. Pretendard 는 가변 폰트라 중간 굵기가 또렷합니다. */
+    --fw-black: 800; /* 시계·카운트다운·로고 */
+    --fw-bold: 700; /* 화면 제목 */
+    --fw-semibold: 600; /* 소제목·곡 제목 */
+    --fw-medium: 500; /* 버튼·강조 본문 */
+    --fw-regular: 400; /* 본문·설명 */
+
+    --lh-tight: 1.1; /* 큰 숫자와 제목 */
+    --lh-normal: 1.5; /* 본문 */
   }
 
   /* ==================== 테마 변수 ==================== */
@@ -117,7 +151,19 @@ const globalCss = css`
     position: relative;
     color: var(--text-primary);
     background: var(--bg-base);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-normal);
+    /* Pretendard 의 숫자 폭을 고르게 해 시계가 덜컹거리지 않게 합니다. */
+    font-variant-numeric: tabular-nums;
     transition: background 0.3s ease;
+  }
+
+  /* 버튼 글자는 본문보다 한 단계 무겁게 — 누를 수 있다는 신호입니다.
+     굵기를 따로 정한 컴포넌트(선택된 칩 등)는 그쪽이 이깁니다. */
+  button {
+    font-weight: var(--fw-medium);
+    line-height: var(--lh-tight);
   }
 
   /* Material Symbols 기본값. 폰트 자체는 main.tsx 에서 import 합니다. */
