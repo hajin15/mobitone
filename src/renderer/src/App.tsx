@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 
@@ -7,10 +7,15 @@ import { TopBar } from './components/TopBar';
 import { CenterDisplay } from './components/CenterDisplay';
 import { PlayerCard } from './components/PlayerCard';
 import { UrlBar } from './components/UrlBar';
+import { AlarmScreen } from './components/AlarmScreen';
+import { TimerScreen } from './components/TimerScreen';
+import { RingingOverlay } from './components/RingingOverlay';
 import { useClock } from './hooks/useClock';
 import { useTheme } from './hooks/useTheme';
 import { useYouTubePlayer } from './hooks/useYouTubePlayer';
 import { useIntroAnimation } from './hooks/useIntroAnimation';
+import { useAlarms } from './hooks/useAlarms';
+import { useTimer } from './hooks/useTimer';
 import { parseVideoId } from './lib/format';
 
 // 아무 기록도 없는 첫 실행에서만 쓰이는 곡(YouTube API 데모 영상).
@@ -19,6 +24,9 @@ const DEFAULT_VIDEO_ID = 'M7lc1UVf-VE';
 // 마지막으로 듣던 곡. Electron 이 localStorage 를 디스크에 보관해주므로
 // 앱을 껐다 켜도 남아 있습니다.
 const LAST_VIDEO_KEY = 'mobitone:last-video';
+
+/** 상단바는 어느 화면에서나 남습니다. 가운데 내용만 갈아끼웁니다. */
+type Screen = 'home' | 'alarm' | 'timer';
 
 function loadLastVideoId(): string {
   // 저장된 값이 손상됐을 수도 있으니 입력창과 같은 검사를 거칩니다.
@@ -31,11 +39,29 @@ export function App() {
 
   const [videoId, setVideoId] = useState(loadLastVideoId);
 
+  const [screen, setScreen] = useState<Screen>('home');
+
   const { theme, toggleTheme } = useTheme();
-  const { time, greeting } = useClock();
+  const { now, time, greeting } = useClock();
   const player = useYouTubePlayer(videoId, youtubeHostRef);
+  const alarms = useAlarms(now);
+  const timer = useTimer();
 
   useIntroAnimation(shellRef);
+
+  const goHome = useCallback(() => setScreen('home'), []);
+
+  // 어느 화면에서든 Esc 로 홈에 돌아옵니다.
+  useEffect(() => {
+    if (screen === 'home') return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setScreen('home');
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [screen]);
 
   // 곡이 바뀔 때마다 기억해 둡니다. 다음 실행 때 이 곡을 물고 시작합니다.
   useEffect(() => {
@@ -51,13 +77,55 @@ export function App() {
         <Blob data-anim="blob" index={2} />
         <Blob data-anim="blob" index={3} />
 
-        <TopBar theme={theme} onToggleTheme={toggleTheme} />
+        <TopBar
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onOpenAlarm={() => setScreen('alarm')}
+        />
 
-        <CenterDisplay time={time} greeting={greeting} subtitle="시작이 반이다" />
+        {screen === 'home' && (
+          <>
+            <CenterDisplay time={time} greeting={greeting} subtitle="시작이 반이다" />
+            <PlayerCard {...player} />
+            <UrlBar onSubmit={setVideoId} />
+          </>
+        )}
 
-        <PlayerCard {...player} />
+        {screen === 'alarm' && (
+          <AlarmScreen
+            alarms={alarms.alarms}
+            onAdd={alarms.add}
+            onRemove={alarms.remove}
+            onToggle={alarms.toggle}
+            onBack={goHome}
+            onGoTimer={() => setScreen('timer')}
+          />
+        )}
 
-        <UrlBar onSubmit={setVideoId} />
+        {screen === 'timer' && (
+          <TimerScreen
+            remaining={timer.remaining}
+            isRunning={timer.isRunning}
+            onStart={timer.start}
+            onPause={timer.pause}
+            onResume={timer.resume}
+            onReset={timer.reset}
+            onBack={goHome}
+            onGoAlarm={() => setScreen('alarm')}
+          />
+        )}
+
+        {/* 알람이 먼저입니다. 둘이 겹치면 타이머는 알람을 끈 뒤에 뜹니다. */}
+        {alarms.ringing && (
+          <RingingOverlay
+            label={`알람 ${alarms.ringing.time}`}
+            onStop={alarms.stopRinging}
+          />
+        )}
+
+        {!alarms.ringing && timer.isDone && (
+          <RingingOverlay label="타이머 종료" onStop={timer.reset} />
+        )}
 
         {/* 소리만 쓰는 YouTube iframe 이 이 안에 마운트됩니다 (화면 밖) */}
         <YouTubeHost ref={youtubeHostRef} />

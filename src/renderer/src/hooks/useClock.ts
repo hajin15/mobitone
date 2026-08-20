@@ -12,6 +12,8 @@ export function useClock() {
   }, []);
 
   return {
+    // 알람 감시가 원본 Date 를 씁니다(분 비교 + 날짜 기록).
+    now,
     time: formatClock(now),
     greeting: greetingFor(now.getHours()),
   };

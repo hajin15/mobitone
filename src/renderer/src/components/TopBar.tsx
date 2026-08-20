@@ -6,9 +6,10 @@ import type { Theme } from '../hooks/useTheme';
 type TopBarProps = {
   theme: Theme;
   onToggleTheme: () => void;
+  onOpenAlarm: () => void;
 };
 
-export function TopBar({ theme, onToggleTheme }: TopBarProps) {
+export function TopBar({ theme, onToggleTheme, onOpenAlarm }: TopBarProps) {
   const isDark = theme === 'dark';
 
   return (
@@ -36,10 +37,11 @@ export function TopBar({ theme, onToggleTheme }: TopBarProps) {
           <Icon name={isDark ? 'light_mode' : 'dark_mode'} size={20} />
         </IconButton>
 
-        {/* TODO: 알람 / 설정 / 메뉴 — 아직 핸들러가 없습니다. */}
-        <IconButton type="button" aria-label="알람">
+        <IconButton type="button" aria-label="알람과 타이머" onClick={onOpenAlarm}>
           <Icon name="alarm" size={20} />
         </IconButton>
+
+        {/* TODO: 설정 / 메뉴 — 아직 핸들러가 없습니다. */}
 
         <IconButton type="button" aria-label="설정">
           <Icon name="settings" size={20} />

@@ -9,7 +9,7 @@
     "build": "electron-vite build",
     "preview": "electron-vite build && electron-vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/renderer/src/lib/format.test.ts"
+    "test": "node --test \"src/renderer/src/lib/**/*.test.ts\""
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",

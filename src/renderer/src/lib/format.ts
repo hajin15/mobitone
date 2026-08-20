@@ -60,3 +60,15 @@ export function parseVideoId(input: string): string | null {
     return null;
   }
 }
+
+/** 초 → "HH:MM:SS". 타이머 남은 시간 표시용. */
+export function formatCountdown(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '00:00:00';
+
+  const total = Math.floor(seconds);
+  const hh = String(Math.floor(total / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+  const ss = String(total % 60).padStart(2, '0');
+
+  return `${hh}:${mm}:${ss}`;
+}

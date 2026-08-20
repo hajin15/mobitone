@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { formatTime, formatClock, greetingFor, progressPercent, parseVideoId } from './format.ts';
+import { formatTime, formatClock, greetingFor, progressPercent, parseVideoId, formatCountdown } from './format.ts';
 
 test('formatTime: 초를 m:ss 로', () => {
   assert.equal(formatTime(0), '0:00');
@@ -67,4 +67,18 @@ test('parseVideoId: 못 알아보면 null (입력창이 오류를 띄울 수 있
   assert.equal(parseVideoId('그냥 아무 글자'), null);
   assert.equal(parseVideoId('https://www.youtube.com/'), null);
   assert.equal(parseVideoId('https://example.com/watch?v=short'), null);
+});
+
+test('formatCountdown: 초를 HH:MM:SS 로 (타이머 표시용)', () => {
+  assert.equal(formatCountdown(0), '00:00:00');
+  assert.equal(formatCountdown(9), '00:00:09');
+  assert.equal(formatCountdown(65), '00:01:05');
+  assert.equal(formatCountdown(3661), '01:01:01');
+  assert.equal(formatCountdown(86399), '23:59:59');
+});
+
+test('formatCountdown: 이상값은 00:00:00', () => {
+  assert.equal(formatCountdown(-5), '00:00:00');
+  assert.equal(formatCountdown(NaN), '00:00:00');
+  assert.equal(formatCountdown(Infinity), '00:00:00');
 });
