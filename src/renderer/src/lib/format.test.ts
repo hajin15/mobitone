@@ -82,3 +82,21 @@ test('formatCountdown: 이상값은 00:00:00', () => {
   assert.equal(formatCountdown(NaN), '00:00:00');
   assert.equal(formatCountdown(Infinity), '00:00:00');
 });
+
+test('formatClock: 12시간제 (설정에서 끄면 오전/오후로)', () => {
+  const at = (h: number, m: number) => formatClock(new Date(2026, 0, 1, h, m), false);
+
+  // 자정과 정오가 12시가 되어야 합니다. 여기서 0시나 24시가 나오면 안 됩니다.
+  assert.equal(at(0, 5), '오전 12:05');
+  assert.equal(at(12, 0), '오후 12:00');
+
+  assert.equal(at(9, 30), '오전 9:30');
+  assert.equal(at(11, 59), '오전 11:59');
+  assert.equal(at(13, 5), '오후 1:05');
+  assert.equal(at(23, 59), '오후 11:59');
+});
+
+test('formatClock: 인자를 안 주면 기존대로 24시간제', () => {
+  assert.equal(formatClock(new Date(2026, 0, 1, 17, 30)), '17:30');
+  assert.equal(formatClock(new Date(2026, 0, 1, 17, 30), true), '17:30');
+});

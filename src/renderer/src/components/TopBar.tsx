@@ -7,9 +7,18 @@ type TopBarProps = {
   theme: Theme;
   onToggleTheme: () => void;
   onOpenAlarm: () => void;
+  onOpenSettings: () => void;
+  /** withForm 이면 곡 추가 폼이 열린 채로 시작합니다. */
+  onOpenPlaylist: (withForm: boolean) => void;
 };
 
-export function TopBar({ theme, onToggleTheme, onOpenAlarm }: TopBarProps) {
+export function TopBar({
+  theme,
+  onToggleTheme,
+  onOpenAlarm,
+  onOpenSettings,
+  onOpenPlaylist,
+}: TopBarProps) {
   const isDark = theme === 'dark';
 
   return (
@@ -17,13 +26,16 @@ export function TopBar({ theme, onToggleTheme, onOpenAlarm }: TopBarProps) {
       <Logo>MobiTone</Logo>
 
       <PlaylistPill>
-        <PillLabel>
+        <PillLabel type="button" onClick={() => onOpenPlaylist(false)}>
           <Icon name="music_note" size={19} filled />
           <span>Playlist</span>
         </PillLabel>
 
-        {/* TODO(플레이리스트): 곡 추가 UI가 아직 없습니다. */}
-        <PlusButton type="button" aria-label="플레이리스트에 추가">
+        <PlusButton
+          type="button"
+          aria-label="플레이리스트에 곡 추가"
+          onClick={() => onOpenPlaylist(true)}
+        >
           <Icon name="add" size={20} />
         </PlusButton>
       </PlaylistPill>
@@ -41,12 +53,11 @@ export function TopBar({ theme, onToggleTheme, onOpenAlarm }: TopBarProps) {
           <Icon name="alarm" size={20} />
         </IconButton>
 
-        {/* TODO: 설정 / 메뉴 — 아직 핸들러가 없습니다. */}
-
-        <IconButton type="button" aria-label="설정">
+        <IconButton type="button" aria-label="설정" onClick={onOpenSettings}>
           <Icon name="settings" size={20} />
         </IconButton>
 
+        {/* TODO: 메뉴 — 아직 핸들러가 없습니다. */}
         <IconButton type="button" aria-label="메뉴">
           <Icon name="menu" size={20} />
         </IconButton>
@@ -86,10 +97,24 @@ const PlaylistPill = styled.div`
   color: var(--text-secondary);
 `;
 
-const PillLabel = styled.span`
+const PillLabel = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--icon-hover);
+  }
 `;
 
 const PlusButton = styled.button`

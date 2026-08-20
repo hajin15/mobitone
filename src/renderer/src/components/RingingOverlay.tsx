@@ -4,25 +4,26 @@ import styled from '@emotion/styled';
 import { Icon } from './Icon';
 import { startBeeping } from '../lib/beep';
 
-// 자리를 비웠을 때 하염없이 울리지 않게.
-const AUTO_STOP_MS = 60_000;
-
 type Props = {
   label: string;
+  /** 0~1. 설정 화면에서 정합니다. */
+  volume: number;
+  /** 자리를 비웠을 때 스스로 멎기까지(초). */
+  autoStopSec: number;
   onStop: () => void;
 };
 
 /** 알람/타이머가 울릴 때 화면을 덮는 알림창. 소리도 이 컴포넌트가 책임집니다. */
-export function RingingOverlay({ label, onStop }: Props) {
+export function RingingOverlay({ label, volume, autoStopSec, onStop }: Props) {
   useEffect(() => {
-    const stopBeeping = startBeeping();
-    const timeout = setTimeout(onStop, AUTO_STOP_MS);
+    const stopBeeping = startBeeping(volume);
+    const timeout = setTimeout(onStop, autoStopSec * 1000);
 
     return () => {
       stopBeeping();
       clearTimeout(timeout);
     };
-  }, [onStop]);
+  }, [onStop, volume, autoStopSec]);
 
   return (
     <Backdrop role="alertdialog" aria-label={label}>

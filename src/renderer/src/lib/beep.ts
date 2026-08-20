@@ -17,7 +17,7 @@ function getContext(): AudioContext {
   return context;
 }
 
-function playTone(ctx: AudioContext) {
+function playTone(ctx: AudioContext, volume: number) {
   const oscillator = ctx.createOscillator();
   const gain = ctx.createGain();
 
@@ -28,19 +28,20 @@ function playTone(ctx: AudioContext) {
   // 소리를 뚝 끊으면 '틱' 하는 잡음이 생기므로 볼륨을 부드럽게 눕힙니다.
   const now = ctx.currentTime;
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
+  // exponentialRamp 는 0 을 못 받아서 아주 작은 값으로 바닥을 깝니다.
+  gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, volume), now + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + TONE_SECONDS);
 
   oscillator.start(now);
   oscillator.stop(now + TONE_SECONDS);
 }
 
-/** 알람음을 반복 재생하고, 멈추는 함수를 돌려줍니다. */
-export function startBeeping(): () => void {
+/** 알람음을 반복 재생하고, 멈추는 함수를 돌려줍니다. volume 은 0~1. */
+export function startBeeping(volume = 0.25): () => void {
   const ctx = getContext();
 
-  playTone(ctx);
-  const id = setInterval(() => playTone(ctx), REPEAT_MS);
+  playTone(ctx, volume);
+  const id = setInterval(() => playTone(ctx, volume), REPEAT_MS);
 
   return () => clearInterval(id);
 }

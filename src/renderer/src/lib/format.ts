@@ -11,12 +11,23 @@ export function formatTime(seconds: number): string {
   return `${mins}:${String(secs).padStart(2, '0')}`;
 }
 
-/** Date → "HH:MM". 24시간제, 0 패딩. */
-export function formatClock(date: Date): string {
-  const hh = String(date.getHours()).padStart(2, '0');
+/**
+ * Date → 시계 문자열.
+ *
+ * use24 가 true 면 "17:30", false 면 "오후 5:30". 설정 화면에서 고릅니다.
+ * 인자를 생략하면 기존처럼 24시간제입니다.
+ */
+export function formatClock(date: Date, use24 = true): string {
+  const hours = date.getHours();
   const mm = String(date.getMinutes()).padStart(2, '0');
 
-  return `${hh}:${mm}`;
+  if (use24) return `${String(hours).padStart(2, '0')}:${mm}`;
+
+  // 0시와 12시는 둘 다 "12시"로 적습니다(0시가 되면 안 됩니다).
+  const meridiem = hours < 12 ? '오전' : '오후';
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${meridiem} ${hour12}:${mm}`;
 }
 
 /** 시(0-23) → 시간대별 인사말. */

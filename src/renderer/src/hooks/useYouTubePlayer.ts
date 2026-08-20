@@ -81,6 +81,8 @@ export type PlayerState = {
 export function useYouTubePlayer(
   videoId: string,
   hostRef: RefObject<HTMLElement | null>,
+  /** 앱을 켜자마자 재생할지. 곡을 바꿨을 때는 이 값과 무관하게 항상 재생합니다. */
+  autoPlayOnStart = false,
 ): PlayerState {
   const playerRef = useRef<YTPlayer | null>(null);
   // 앱을 켠 직후인지, 사용자가 곡을 바꾼 것인지 구분합니다.
@@ -129,6 +131,8 @@ export function useYouTubePlayer(
         title: data.title || '노래 제목',
         artist: data.author || '가수 이름',
       });
+
+      if (data.video_id) setCurrentId(data.video_id);
     }
 
     loadYouTubeApi().then(() => {
@@ -147,9 +151,8 @@ export function useYouTubePlayer(
             setIsReady(true);
             readTrack(player);
 
-            // 시작할 때는 재생 버튼을 사용자가 누르게 둡니다.
-            // 주소를 새로 넣어 곡이 바뀐 경우에만 곧바로 이어서 틀어줍니다.
-            if (isSwitch) player.playVideo();
+            // 곡을 바꾼 경우엔 항상, 앱을 막 켠 경우엔 설정을 따릅니다.
+            if (isSwitch || autoPlayOnStart) player.playVideo();
           },
           onStateChange: (event: { data: number }) => {
             if (cancelled) return;
@@ -163,8 +166,6 @@ export function useYouTubePlayer(
 
               const playing = player.getVideoData?.()?.video_id;
               const history = historyRef.current;
-
-              if (playing) setCurrentId(playing);
 
               // 지금 가리키는 곡과 같으면 이전/다음으로 이동해 온 것이므로 그대로 둡니다.
               // (일시정지 후 재개로 기록이 불어나는 것도 이 비교가 막아줍니다)
@@ -204,7 +205,7 @@ export function useYouTubePlayer(
       playerRef.current = null;
       mount.remove();
     };
-  }, [videoId, hostRef, moveTo]);
+  }, [videoId, hostRef, moveTo, autoPlayOnStart]);
 
   // 재생 중일 때만 진행바를 돌립니다. 멈추면 마지막 값에서 그대로 멈춥니다.
   useEffect(() => {

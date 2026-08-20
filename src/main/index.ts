@@ -1,7 +1,7 @@
 // Electron "Main 프로세스".
 // OS와 직접 대화하는 부분(창 만들기, 화면 크기, 전역 단축키)은 전부 여기서 처리합니다.
 
-import { app, BrowserWindow, screen, globalShortcut } from 'electron';
+import { app, BrowserWindow, screen, globalShortcut, ipcMain } from 'electron';
 import { join } from 'node:path';
 import type { AddressInfo } from 'node:net';
 import express from 'express';
@@ -105,6 +105,12 @@ async function createWindow() {
     win = null;
   });
 }
+
+// 설정 화면의 "Windows 시작 시 자동 실행" 스위치가 여기로 옵니다.
+// openAtLogin 은 OS 의 시작프로그램 등록을 직접 건드립니다.
+ipcMain.on('settings:launch-at-login', (_event, enabled: boolean) => {
+  app.setLoginItemSettings({ openAtLogin: Boolean(enabled) });
+});
 
 app.whenReady().then(() => {
   createWindow();
