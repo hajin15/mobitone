@@ -1,18 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": ".",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+
+    // format.test.ts 가 './format.ts' 처럼 확장자까지 적어 import 합니다.
+    // Node 로 .ts 테스트를 직접 실행할 때 필요한 형태입니다.
+    "allowImportingTsExtensions": true,
+    "types": ["node", "vite/client"],
+
+    // 실제 트랜스파일은 electron-vite(esbuild/rollup)가 합니다.
+    // tsc 는 타입 검사 전용입니다 → npm run typecheck
+    "noEmit": true
   },
-  "include": [
-    "main.ts",
-    "preload.ts",
-    "renderer.ts",
-    "server.ts"
-  ]
+  "include": ["src/**/*", "electron.vite.config.ts"]
 }
