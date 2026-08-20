@@ -5,6 +5,20 @@ import styled from '@emotion/styled';
 import { Icon } from './Icon';
 import type { Alarm } from '../lib/alarm';
 
+const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+
+/** 고른 시각이 오전인지 오후인지 한눈에 확인할 수 있게. */
+function meridiemLabel(hour: string): string {
+  const value = Number(hour);
+
+  if (value === 0) return '오전 12시';
+  if (value < 12) return `오전 ${value}시`;
+  if (value === 12) return '오후 12시';
+
+  return `오후 ${value - 12}시`;
+}
+
 type Props = {
   alarms: Alarm[];
   onAdd: (time: string, repeat: boolean) => void;
@@ -15,12 +29,25 @@ type Props = {
 };
 
 export function AlarmScreen({ alarms, onAdd, onRemove, onToggle, onBack, onGoTimer }: Props) {
-  const [time, setTime] = useState('07:00');
+  const [isAdding, setIsAdding] = useState(false);
+  const [hour, setHour] = useState('08');
+  const [minute, setMinute] = useState('00');
   const [repeat, setRepeat] = useState(false);
+
+  function openForm() {
+    // 고정된 기본값 대신 지금 시각에서 시작합니다.
+    const now = new Date();
+
+    setHour(String(now.getHours()).padStart(2, '0'));
+    setMinute(String(now.getMinutes()).padStart(2, '0'));
+    setRepeat(false);
+    setIsAdding(true);
+  }
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    onAdd(time, repeat);
+    onAdd(`${hour}:${minute}`, repeat);
+    setIsAdding(false);
   }
 
   return (
@@ -72,25 +99,71 @@ export function AlarmScreen({ alarms, onAdd, onRemove, onToggle, onBack, onGoTim
         )}
       </List>
 
-      <AddForm onSubmit={submit}>
-        <TimeInput
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          aria-label="알람 시각"
-          required
-        />
+      {isAdding ? (
+        <AddForm onSubmit={submit}>
+          {/* 드롭다운(운영체제가 띄우는 팝업)은 투명한 창에서 제대로 안 그려질 수
+              있어, 고를 수 있는 값을 처음부터 전부 펼쳐 놓습니다. */}
+          <Preview>
+            <PreviewTime>{`${hour}:${minute}`}</PreviewTime>
+            <PreviewHint>{meridiemLabel(hour)}</PreviewHint>
+          </Preview>
 
-        <RepeatLabel>
-          <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
-          <span>매일 반복</span>
-        </RepeatLabel>
+          <PickerBlock>
+            <FieldLabel>시</FieldLabel>
+            <Chips>
+              {HOURS.map((value) => (
+                <Chip
+                  key={value}
+                  type="button"
+                  aria-label={`${value}시`}
+                  data-on={value === hour || undefined}
+                  onClick={() => setHour(value)}
+                >
+                  {value}
+                </Chip>
+              ))}
+            </Chips>
+          </PickerBlock>
 
-        <AddButton type="submit">
+          <PickerBlock>
+            <FieldLabel>분</FieldLabel>
+            <Chips>
+              {MINUTES.map((value) => (
+                <Chip
+                  key={value}
+                  type="button"
+                  aria-label={`${value}분`}
+                  data-on={value === minute || undefined}
+                  onClick={() => setMinute(value)}
+                >
+                  {value}
+                </Chip>
+              ))}
+            </Chips>
+          </PickerBlock>
+
+          <RepeatLabel>
+            <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
+            <span>매일 반복</span>
+          </RepeatLabel>
+
+          <ButtonRow>
+            <GhostButton type="button" onClick={() => setIsAdding(false)}>
+              취소
+            </GhostButton>
+
+            <PrimaryButton type="submit">
+              <Icon name="check" size={20} />
+              <span>{`${hour}:${minute} 으로 추가`}</span>
+            </PrimaryButton>
+          </ButtonRow>
+        </AddForm>
+      ) : (
+        <PrimaryButton type="button" onClick={openForm}>
           <Icon name="add" size={20} />
           <span>알람 추가</span>
-        </AddButton>
-      </AddForm>
+        </PrimaryButton>
+      )}
     </Screen>
   );
 }
@@ -101,7 +174,7 @@ const Screen = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 26px;
+  gap: 22px;
   padding: 0 50px;
 `;
 
@@ -136,7 +209,7 @@ const Title = styled.h1`
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
   color: var(--text-primary);
 `;
@@ -147,14 +220,13 @@ const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* 알람이 늘어나도 화면 밖으로 밀려나지 않게 */
-  max-height: 42vh;
+  max-height: 26vh;
   overflow-y: auto;
 `;
 
 const Empty = styled.div`
   text-align: center;
-  padding: 28px;
+  padding: 20px;
   font-size: 16px;
   color: var(--text-tertiary);
 `;
@@ -225,24 +297,78 @@ const IconButton = styled.button`
 
 const AddForm = styled.form`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 14px 20px;
-  border-radius: 20px;
-  background: var(--bottom-bg);
-  border: 1px solid var(--bottom-border);
-  backdrop-filter: blur(10px);
+  gap: 14px;
+  padding: 22px 30px;
+  border-radius: 22px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--card-shadow);
 `;
 
-const TimeInput = styled.input`
-  background: none;
-  border: none;
-  outline: none;
+const Preview = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+`;
+
+const PreviewTime = styled.span`
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+`;
+
+const PreviewHint = styled.span`
+  font-size: 16px;
+  color: var(--text-tertiary);
+`;
+
+const PickerBlock = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+`;
+
+const FieldLabel = styled.span`
+  width: 20px;
+  padding-top: 8px;
+  flex-shrink: 0;
+  font-size: 15px;
+  color: var(--text-tertiary);
+`;
+
+const Chips = styled.div`
+  display: grid;
+  /* 시(24개)는 두 줄, 분(60개)은 다섯 줄로 떨어집니다. */
+  grid-template-columns: repeat(12, 40px);
+  gap: 6px;
+`;
+
+const Chip = styled.button`
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--icon-bg);
   font-family: inherit;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 14px;
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: var(--icon-hover);
+  }
+
+  &[data-on] {
+    background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
+    border-color: transparent;
+    color: #ffffff;
+    font-weight: 700;
+  }
 `;
 
 const RepeatLabel = styled.label`
@@ -254,20 +380,36 @@ const RepeatLabel = styled.label`
   cursor: pointer;
 `;
 
-const AddButton = styled.button`
+const ButtonRow = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+const PrimaryButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 12px 24px;
   border-radius: 16px;
   border: none;
   background: linear-gradient(135deg, var(--playbtn-grad-start), var(--playbtn-grad-end));
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   color: #ffffff;
   cursor: pointer;
 
   &:hover {
     filter: brightness(1.08);
+  }
+`;
+
+const GhostButton = styled(PrimaryButton)`
+  background: none;
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+
+  &:hover {
+    filter: none;
+    background: var(--icon-hover);
   }
 `;
