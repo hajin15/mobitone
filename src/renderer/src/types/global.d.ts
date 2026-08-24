@@ -6,6 +6,8 @@ declare global {
   interface Window {
     mobitone?: {
       setLaunchAtLogin(enabled: boolean): void;
+      quit(): void;
+      minimize(): void;
     };
   }
 }

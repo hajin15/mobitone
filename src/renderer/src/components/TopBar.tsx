@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { Icon } from './Icon';
@@ -20,6 +21,31 @@ export function TopBar({
   onOpenPlaylist,
 }: TopBarProps) {
   const isDark = theme === 'dark';
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // 메뉴 밖을 누르거나 Esc 를 누르면 닫습니다. 안 그러면 한 번 연 뒤
+  // 항목을 고르기 전에는 빠져나갈 방법이 없습니다.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMenuOpen(false);
+    }
+
+    window.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      window.removeEventListener('mousedown', onPointerDown);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [menuOpen]);
 
   return (
     <Bar data-anim="top-bar">
@@ -57,10 +83,52 @@ export function TopBar({
           <Icon name="settings" size={20} />
         </IconButton>
 
-        {/* TODO: 메뉴 — 아직 핸들러가 없습니다. */}
-        <IconButton type="button" aria-label="메뉴">
-          <Icon name="menu" size={20} />
-        </IconButton>
+        <MenuAnchor ref={menuRef}>
+          <IconButton
+            type="button"
+            aria-label="창 메뉴"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <Icon name="menu" size={20} />
+          </IconButton>
+
+          {menuOpen && (
+            <Menu role="menu">
+              <MenuItem
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false);
+                  window.mobitone?.minimize();
+                }}
+              >
+                <Icon name="keyboard_arrow_down" size={20} />
+                <MenuText>
+                  <span>화면 닫기</span>
+                  <MenuHint>작업표시줄에서 다시 열기</MenuHint>
+                </MenuText>
+              </MenuItem>
+
+              <MenuItem
+                type="button"
+                role="menuitem"
+                data-danger
+                onClick={() => {
+                  setMenuOpen(false);
+                  window.mobitone?.quit();
+                }}
+              >
+                <Icon name="power_settings_new" size={20} />
+                <MenuText>
+                  <span>화면 종료하기</span>
+                  <MenuHint>Ctrl + Alt + Q</MenuHint>
+                </MenuText>
+              </MenuItem>
+            </Menu>
+          )}
+        </MenuAnchor>
       </IconGroup>
     </Bar>
   );
@@ -129,6 +197,64 @@ const PlusButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const MenuAnchor = styled.div`
+  position: relative;
+`;
+
+const Menu = styled.div`
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 5;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--card-shadow);
+`;
+
+const MenuItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 14px;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: var(--icon-hover);
+  }
+
+  &[data-danger] {
+    color: #e2607a;
+  }
+`;
+
+const MenuText = styled.span`
+  display: flex;
+  flex-direction: column;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+`;
+
+const MenuHint = styled.span`
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  color: var(--text-tertiary);
 `;
 
 const IconGroup = styled.div`

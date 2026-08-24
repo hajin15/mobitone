@@ -37,6 +37,9 @@ function serveRenderer(): Promise<string> {
 
 const QUIT_ACCELERATOR = 'Control+Alt+Q';
 
+// 작업표시줄에 안 뜨는 창이라, 최소화하면 이 단축키 말고는 되살릴 방법이 없습니다.
+const TOGGLE_ACCELERATOR = 'Control+Alt+M';
+
 /**
  * 비상 종료.
  *
@@ -47,6 +50,32 @@ const QUIT_ACCELERATOR = 'Control+Alt+Q';
  */
 function forceQuit() {
   app.exit(0);
+}
+
+/**
+ * 잠시 치워두기.
+ *
+ * 이 창은 평소 작업표시줄에 뜨지 않습니다(배경화면처럼 보여야 하므로).
+ * 그대로 최소화하면 다시 부를 손잡이가 단축키밖에 안 남으니, 최소화된
+ * 동안에만 작업표시줄에 내놨다가 돌아올 때 도로 감춥니다.
+ */
+function minimizeWindow() {
+  if (!win) return;
+
+  win.setSkipTaskbar(false);
+  win.minimize();
+}
+
+/** 치웠다 다시 부르기. 단축키로 양쪽을 오갑니다. */
+function toggleWindow() {
+  if (!win) return;
+
+  if (win.isMinimized()) {
+    win.restore();
+    win.focus();
+  } else {
+    minimizeWindow();
+  }
 }
 
 async function createWindow() {
@@ -101,6 +130,11 @@ async function createWindow() {
     await win.loadURL(await serveRenderer());
   }
 
+  // 작업표시줄 아이콘을 눌러 돌아왔을 때도 여기를 지나갑니다.
+  win.on('restore', () => {
+    win?.setSkipTaskbar(true);
+  });
+
   win.on('closed', () => {
     win = null;
   });
@@ -112,6 +146,12 @@ ipcMain.on('settings:launch-at-login', (_event, enabled: boolean) => {
   app.setLoginItemSettings({ openAtLogin: Boolean(enabled) });
 });
 
+// 상단바 메뉴의 "앱 종료". 단축키와 같은 경로로 끝냅니다.
+ipcMain.on('app:quit', () => forceQuit());
+
+// 상단바 메뉴의 "화면 닫기". Ctrl+Alt+M 으로 다시 불러옵니다.
+ipcMain.on('window:minimize', () => minimizeWindow());
+
 app.whenReady().then(() => {
   createWindow();
 
@@ -120,6 +160,12 @@ app.whenReady().then(() => {
   if (!globalShortcut.register(QUIT_ACCELERATOR, forceQuit)) {
     console.warn(
       `[MobiTone] ${QUIT_ACCELERATOR} 전역 등록 실패 — 다른 앱이 선점한 것 같습니다.`,
+    );
+  }
+
+  if (!globalShortcut.register(TOGGLE_ACCELERATOR, toggleWindow)) {
+    console.warn(
+      `[MobiTone] ${TOGGLE_ACCELERATOR} 전역 등록 실패 — 다른 앱이 선점한 것 같습니다.`,
     );
   }
 

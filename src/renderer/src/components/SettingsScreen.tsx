@@ -4,6 +4,14 @@ import { Icon } from './Icon';
 import type { Settings } from '../hooks/useSettings';
 
 const VOLUMES = [0.1, 0.25, 0.5, 0.75, 1] as const;
+
+// 창에 테두리도 작업표시줄 아이콘도 없어서, 여기가 아니면 단축키를 알 길이 없습니다.
+const SHORTCUTS: { keys: string; what: string }[] = [
+  { keys: 'Ctrl + Alt + Q', what: '앱 종료 (어느 창이 앞에 있든 동작)' },
+  { keys: 'Ctrl + Alt + M', what: '화면 닫기 / 다시 열기' },
+  { keys: 'Esc', what: '홈 화면으로 돌아가기' },
+  { keys: 'Esc / Enter', what: '울리는 알람·타이머 끄기' },
+];
 const AUTO_STOPS = [30, 60, 180, 300] as const;
 
 function autoStopLabel(seconds: number): string {
@@ -147,6 +155,20 @@ export function SettingsScreen({ settings, onUpdate, onReset, onBack }: Props) {
           </Switch>
         </Item>
       </Panel>
+
+      <PanelTitle>단축키</PanelTitle>
+
+      <Panel>
+        {SHORTCUTS.map((shortcut) => (
+          <Item key={shortcut.keys}>
+            <ItemText>
+              <ItemName>{shortcut.what}</ItemName>
+            </ItemText>
+
+            <Keys>{shortcut.keys}</Keys>
+          </Item>
+        ))}
+      </Panel>
     </Screen>
   );
 }
@@ -158,7 +180,11 @@ const Screen = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 22px;
-  padding: 0 50px;
+  padding: 0 50px 40px;
+  /* 상단바(약 120px) 아래로 남는 만큼만 쓰고, 넘치면 화면째 굴립니다.
+     패널마다 따로 스크롤하면 스크롤바가 두 겹으로 겹칩니다. */
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 `;
 
 const Header = styled.div`
@@ -207,9 +233,29 @@ const Panel = styled.div`
   border: 1px solid var(--card-border);
   backdrop-filter: blur(18px);
   box-shadow: var(--card-shadow);
-  /* 항목이 늘어나도 화면 밖으로 밀려나지 않게 */
-  max-height: 56vh;
-  overflow-y: auto;
+  flex-shrink: 0;
+`;
+
+const PanelTitle = styled.h2`
+  width: 100%;
+  max-width: 720px;
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+`;
+
+// 눌러야 할 키라는 걸 한눈에 보이게 키캡처럼 둘렀습니다.
+const Keys = styled.kbd`
+  flex-shrink: 0;
+  padding: 7px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--icon-bg);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
 `;
 
 const Item = styled.div`
