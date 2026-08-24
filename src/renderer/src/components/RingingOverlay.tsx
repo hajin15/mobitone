@@ -19,9 +19,17 @@ export function RingingOverlay({ label, volume, autoStopSec, onStop }: Props) {
     const stopBeeping = startBeeping(volume);
     const timeout = setTimeout(onStop, autoStopSec * 1000);
 
+    // 자다 깨서 마우스를 찾을 필요 없이 Esc 나 Enter 로 끕니다.
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape' || event.key === 'Enter') onStop();
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+
     return () => {
       stopBeeping();
       clearTimeout(timeout);
+      window.removeEventListener('keydown', onKeyDown);
     };
   }, [onStop, volume, autoStopSec]);
 
@@ -33,6 +41,7 @@ export function RingingOverlay({ label, volume, autoStopSec, onStop }: Props) {
         </Bell>
 
         <Label>{label}</Label>
+        <Hint>Esc 또는 Enter 로도 끌 수 있어요</Hint>
 
         <StopButton type="button" onClick={onStop} autoFocus>
           중지
@@ -89,6 +98,12 @@ const Label = styled.div`
   font-size: var(--fs-h1);
   font-weight: var(--fw-bold);
   color: var(--text-primary);
+`;
+
+const Hint = styled.div`
+  margin-top: -12px;
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
 `;
 
 const StopButton = styled.button`

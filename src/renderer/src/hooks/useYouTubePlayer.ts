@@ -25,6 +25,16 @@ const API_SRC = 'https://www.youtube.com/iframe_api';
 // 없으면 전부 막힌 믹스에서 무한히 넘어갑니다.
 const MAX_AUTO_SKIP = 3;
 
+/** YouTube 가 돌려주는 오류 코드를 사람이 읽을 말로 바꿉니다. */
+function errorMessage(code: number): string {
+  // 101, 150 = 영상 주인이 외부 사이트 재생을 막아둔 경우입니다.
+  if (code === 101 || code === 150) return '이 영상은 다른 사이트에서 재생할 수 없어요';
+  if (code === 100) return '영상을 찾을 수 없어요. 비공개이거나 삭제됐을 수 있어요';
+  if (code === 2) return '주소를 다시 확인해 주세요';
+
+  return '재생할 수 없는 영상이에요';
+}
+
 // IFrame API 는 전역 콜백(onYouTubeIframeAPIReady) 하나만 받기 때문에
 // 스크립트를 한 번만 넣고 그 결과를 Promise 로 공유합니다.
 let apiReady: Promise<void> | null = null;
@@ -54,11 +64,15 @@ export type PlayerState = {
   isReady: boolean;
   isPlaying: boolean;
   canPrev: boolean;
+  /** 재생할 수 없을 때의 안내 문구. 문제가 없으면 빈 문자열. */
+  error: string;
   /** 지금 재생 중인 영상 ID. 아직 아무것도 안 틀었으면 빈 문자열. */
   currentId: string;
   track: { title: string; artist: string };
   progress: { current: number; duration: number; percent: number };
   toggle: () => void;
+  play: () => void;
+  pause: () => void;
   next: () => void;
   prev: () => void;
 };
@@ -100,6 +114,7 @@ export function useYouTubePlayer(
   const [isPlaying, setIsPlaying] = useState(false);
   const [canPrev, setCanPrev] = useState(false);
   const [currentId, setCurrentId] = useState('');
+  const [error, setError] = useState('');
   const [track, setTrack] = useState({ title: '노래 제목', artist: '가수 이름' });
   const [progress, setProgress] = useState({ current: 0, duration: 0, percent: 0 });
 
@@ -115,6 +130,7 @@ export function useYouTubePlayer(
 
     let cancelled = false;
 
+    setError(''); // 곡을 바꾸면 지난 오류 안내는 지웁니다
     const isSwitch = lastIdRef.current !== videoId;
     lastIdRef.current = videoId;
 
@@ -162,7 +178,8 @@ export function useYouTubePlayer(
 
             if (event.data === 1) {
               readTrack(player);
-              skipsRef.current = 0; // 한 곡이라도 재생됐으면 스킵 카운터를 되돌립니다
+              setError(''); // 한 곡이라도 소리가 나면 안내를 거둡니다
+              skipsRef.current = 0;
 
               const playing = player.getVideoData?.()?.video_id;
               const history = historyRef.current;
@@ -177,12 +194,16 @@ export function useYouTubePlayer(
               }
             }
           },
-          onError: () => {
+          onError: (event: { data: number }) => {
             if (cancelled) return;
 
             // 믹스를 도는 중에만 자동으로 넘깁니다. 사용자가 직접 넣은 영상이
-            // 막혀 있는 경우엔 멋대로 다른 곡을 틀지 않고 그대로 둡니다.
-            if ((player.getPlaylistIndex?.() ?? -1) < 0) return;
+            // 막혀 있으면 멋대로 다른 곡을 틀지 않고, 왜 안 되는지 알립니다.
+            if ((player.getPlaylistIndex?.() ?? -1) < 0) {
+              setError(errorMessage(event.data));
+              setIsPlaying(false);
+              return;
+            }
             if (skipsRef.current >= MAX_AUTO_SKIP) return;
             skipsRef.current += 1;
             player.nextVideo();
@@ -235,6 +256,16 @@ export function useYouTubePlayer(
     }
   }, [isPlaying]);
 
+  // 알람이 울릴 때처럼 밖에서 소리를 잠시 재워야 하는 경우가 있어
+  // toggle 과 별개로 명시적인 재생/정지를 내보냅니다.
+  const play = useCallback(() => {
+    playerRef.current?.playVideo();
+  }, []);
+
+  const pause = useCallback(() => {
+    playerRef.current?.pauseVideo();
+  }, []);
+
   const next = useCallback(() => {
     const player = playerRef.current;
     if (!player) return;
@@ -276,9 +307,12 @@ export function useYouTubePlayer(
     isPlaying,
     canPrev,
     currentId,
+    error,
     track,
     progress,
     toggle,
+    play,
+    pause,
     next,
     prev,
   };

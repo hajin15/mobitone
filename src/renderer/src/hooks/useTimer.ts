@@ -38,12 +38,12 @@ export function useTimer() {
   }, []);
 
   const pause = useCallback(() => setIsRunning(false), []);
+
+  // setRemaining 안에서 setIsRunning 을 부르면 StrictMode 의 이중 호출에
+  // 걸립니다. 남은 시간은 이미 이 자리에서 볼 수 있으니 그대로 씁니다.
   const resume = useCallback(() => {
-    setRemaining((seconds) => {
-      if (seconds > 0) setIsRunning(true);
-      return seconds;
-    });
-  }, []);
+    if (remaining > 0) setIsRunning(true);
+  }, [remaining]);
 
   const reset = useCallback(() => {
     setIsRunning(false);

@@ -60,6 +60,24 @@ export function App() {
 
   const goHome = useCallback(() => setScreen('home'), []);
 
+  const isRinging = Boolean(alarms.ringing) || timer.isDone;
+  const wasPlayingRef = useRef(false);
+
+  // 알람음과 음악이 겹치면 둘 다 안 들립니다. 울리는 동안만 음악을 재우고,
+  // 끄고 나면 듣고 있던 사람에게만 돌려줍니다.
+  useEffect(() => {
+    if (isRinging) {
+      wasPlayingRef.current = player.isPlaying;
+      if (player.isPlaying) player.pause();
+      return;
+    }
+
+    if (wasPlayingRef.current) {
+      wasPlayingRef.current = false;
+      player.play();
+    }
+  }, [isRinging]);
+
   const openPlaylist = useCallback((withForm: boolean) => {
     setPlaylistWithForm(withForm);
     setScreen('playlist');

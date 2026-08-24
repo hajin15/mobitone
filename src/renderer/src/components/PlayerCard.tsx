@@ -8,6 +8,7 @@ export function PlayerCard({
   isReady,
   isPlaying,
   canPrev,
+  error,
   track,
   progress,
   toggle,
@@ -23,7 +24,11 @@ export function PlayerCard({
 
         <TrackInfo>
           <TrackTitle title={track.title}>{track.title}</TrackTitle>
-          <TrackArtist title={track.artist}>{track.artist}</TrackArtist>
+          {error ? (
+            <TrackError title={error}>{error}</TrackError>
+          ) : (
+            <TrackArtist title={track.artist}>{track.artist}</TrackArtist>
+          )}
         </TrackInfo>
 
         <Right>
@@ -120,6 +125,11 @@ const TrackArtist = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+// 왜 소리가 안 나는지 알려주는 자리. 가수 이름과 같은 줄을 씁니다.
+const TrackError = styled(TrackArtist)`
+  color: #e2607a;
 `;
 
 const Right = styled.div`
