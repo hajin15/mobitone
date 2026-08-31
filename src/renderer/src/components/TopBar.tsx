@@ -136,7 +136,10 @@ export function TopBar({
 
 const Bar = styled.header`
   position: relative;
-  z-index: 1;
+  /* 화면 컨테이너들도 z-index:1 이라, DOM 에서 뒤에 오는 화면이 상단바를 덮습니다.
+     ☰ 드롭다운은 상단바 박스 밖으로 삐져나오므로 한 칸 올려야 가려지지 않습니다.
+     알람 오버레이(10)보다는 낮게 둡니다. */
+  z-index: 2;
   display: flex;
   align-items: center;
   padding: 36px 50px;
